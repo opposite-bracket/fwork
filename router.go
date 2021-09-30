@@ -6,9 +6,10 @@ package fwork
 type Route struct {
 	Url    string
 	Method string
-	Handler Handler
+	Handler RouteHandler
+	ComputedId string
 }
 
-// Handler supports http requests
+// RouteHandler supports http requests
 // represented by routes
-type Handler func(*ReqContext)
+type RouteHandler func(*ReqContext)
