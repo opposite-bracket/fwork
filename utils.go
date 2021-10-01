@@ -7,12 +7,6 @@ import (
 
 var sampleRegexp = regexp.MustCompile(`:([a-zA-Z0-9_]+)`)
 
-// ComputeRouteIdPattern generates a pattern for evaluating
-// registered routes against incoming ones
-func ComputeRouteIdPattern(method string, url string) string {
-	return fmt.Sprintf("^%s %s$", method, url)
-}
-
 // ComputeRouteId generates a format for evaluating
 // registered routes against incoming ones
 func ComputeRouteId(method string, url string) string {

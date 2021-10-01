@@ -3,11 +3,11 @@ package fwork
 import "regexp"
 
 // Route contains information
-// about routes that the api engine
+// about routes that the api Engine
 // is capable of handling
 type Route struct {
-	Url        string
-	Method     string
+	Url               string
+	Method            string
 	Handler           RouteHandler
 	ComputedIdPattern *regexp.Regexp
 }

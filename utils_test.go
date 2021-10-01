@@ -1,6 +1,7 @@
 package fwork
 
 import (
+	"fmt"
 	"net/http"
 	"regexp"
 	"testing"
@@ -81,5 +82,15 @@ func TestGenerateUrlPattern(t *testing.T) {
 				t.Errorf("GenerateUrlPatternMatcher() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestComputeRouteId(t *testing.T) {
+	method := http.MethodGet
+	url := "/hello-world"
+	got := ComputeRouteId(method, url)
+	want := fmt.Sprintf("%s %s", method, url)
+	if got != want {
+		t.Errorf("ComputeRouteId() = %v, want %v", got, want)
 	}
 }

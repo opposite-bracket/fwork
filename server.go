@@ -1,7 +1,6 @@
 package fwork
 
 import (
-	"errors"
 	"log"
 	"net/http"
 )
@@ -11,35 +10,40 @@ const defaultPort = ":5000"
 var (
 	// RouteNotFoundError is thrown when incoming request
 	// did not match a request
-	RouteNotFoundError = errors.New("route not found")
-	InvalidRouteUrlError = errors.New("url route is not valid")
+	RouteNotFoundError = ApiError{
+		Status:  http.StatusNotFound,
+		Code:    "01",
+		Message: "route not found",
+	}
 )
 
-type Void struct {}
+type Void struct{}
+type ErrorResponse struct {
+	Code    int
+	Message string
+}
 
-// engine holds information and
+// Engine holds information and
 // behaviour about the API server
-type engine struct {
+type Engine struct {
+	http.Server
 	Routes []Route
 }
 
 // ServeHTTP complies with Handler interface to
 // be able to determine which route needs to be
 // used to handle request
-func (e *engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c := NewReqContext(w, r)
 	if route, err := e.findRoute(c); err != nil && err == RouteNotFoundError {
 		c.JsonReply(http.StatusNotFound, Void{})
-	} else if err != nil {
-		c.JsonReply(http.StatusInternalServerError, Void{})
 	} else {
 		route.Handler(c)
 	}
-
 }
 
 // Get registers an http request with GET method
-func (e *engine) Get(url string, handler RouteHandler) {
+func (e *Engine) Get(url string, handler RouteHandler) {
 
 	pattern, _ := GenerateUrlPatternMatcher(http.MethodGet, url)
 
@@ -51,18 +55,13 @@ func (e *engine) Get(url string, handler RouteHandler) {
 	})
 }
 
-func (e *engine) RunServer() {
-	log.Printf("Running on addr %s", defaultPort)
-	http.ListenAndServe(defaultPort, e)
-}
-
 // findRoute figures out if the incoming request is supported.
 // throws the following errors when evaluating if a route
 // matches the requested:
 // 		RouteNotFoundError if route is not found when
 // 		comparing the ComputedIdPattern of the route
 //		InvalidRouteUrlError if the pattern is invalid
-func (e *engine) findRoute(c *ReqContext) (*Route, error) {
+func (e *Engine) findRoute(c *ReqContext) (*Route, error) {
 	expectedComputedId := ComputeRouteId(c.Req.Method, c.Req.URL.Path)
 	for _, route := range e.Routes {
 
@@ -88,7 +87,17 @@ func (e *engine) findRoute(c *ReqContext) (*Route, error) {
 	return nil, RouteNotFoundError
 }
 
-// NewApi instantiates an api engine
-func NewApi() *engine {
-	return &engine{Routes: []Route{}}
+func (e *Engine) RunServer() error {
+	log.Printf("Running on addr %s", defaultPort)
+	return e.ListenAndServe()
+}
+
+// NewApi instantiates an api Engine
+func NewApi() *Engine {
+	e := &Engine{
+		Server: http.Server{Addr: defaultPort},
+		Routes: []Route{},
+	}
+	e.Handler = e
+	return e
 }

@@ -16,16 +16,16 @@ type ReqContext struct {
 }
 
 // JsonReply prepares a response to http client in JSON format
-func (c *ReqContext) JsonReply(status int, body interface{}) {
-	c.Res.WriteHeader(status)
+func (c *ReqContext) JsonReply(status int, body interface{}) error {
 	c.Res.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(c.Res).Encode(body)
+	c.Res.WriteHeader(status)
+	return json.NewEncoder(c.Res).Encode(body)
 }
 
 func NewReqContext(w http.ResponseWriter, r *http.Request) *ReqContext {
 	return &ReqContext{
-		Req: r,
-		Res: w,
+		Req:    r,
+		Res:    w,
 		Params: Params{Url: make(map[string]string, 0)},
 	}
 }
