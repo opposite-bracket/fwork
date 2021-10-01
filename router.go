@@ -14,4 +14,4 @@ type Route struct {
 
 // RouteHandler supports http requests
 // represented by routes
-type RouteHandler func(*ReqContext)
+type RouteHandler func(*ReqContext) error

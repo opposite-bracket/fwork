@@ -27,15 +27,15 @@ var sampleReqContextWithParams = ReqContext{
 var sampleRoute = Route{
 	Url:    "/hello-world",
 	Method: http.MethodGet,
-	Handler: func(c *ReqContext) {
-		c.JsonReply(http.StatusOK, Response{Message: "Hello World"})
+	Handler: func(c *ReqContext) error {
+		return c.JsonReply(http.StatusOK, Response{Message: "Hello World"})
 	},
 	ComputedIdPattern: regexp.MustCompile("^GET /hello-world$"),
 }
 var sampleRouteWithUrlParam = Route{
 	Url:               "/hello-world/:id",
 	Method:            http.MethodGet,
-	Handler:           func(context *ReqContext) {},
+	Handler:           func(context *ReqContext) error {return nil},
 	ComputedIdPattern: regexp.MustCompile("^GET /hello-world/(?P<id>.*)$"),
 }
 
@@ -94,7 +94,7 @@ func TestEngine_findRoute_withNoRouteFound(t *testing.T) {
 }
 
 func TestEngine_Get(t *testing.T) {
-	handler := func(c *ReqContext) {}
+	handler := func(c *ReqContext) error {return nil}
 	e := &Engine{
 		Routes: []Route{},
 	}
