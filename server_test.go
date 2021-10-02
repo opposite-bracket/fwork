@@ -105,6 +105,42 @@ func TestEngine_Get(t *testing.T) {
 	}
 }
 
+func TestEngine_Post(t *testing.T) {
+	handler := func(c *ReqContext) error {return nil}
+	e := &Engine{
+		Routes: []Route{},
+	}
+
+	e.Post("/hello-world", handler)
+	if len(e.Routes) == 0 {
+		t.Errorf("Post() route did not register")
+	}
+}
+
+func TestEngine_Put(t *testing.T) {
+	handler := func(c *ReqContext) error {return nil}
+	e := &Engine{
+		Routes: []Route{},
+	}
+
+	e.Put("/hello-world", handler)
+	if len(e.Routes) == 0 {
+		t.Errorf("Put() route did not register")
+	}
+}
+
+func TestEngine_Delete(t *testing.T) {
+	handler := func(c *ReqContext) error {return nil}
+	e := &Engine{
+		Routes: []Route{},
+	}
+
+	e.Delete("/hello-world", handler)
+	if len(e.Routes) == 0 {
+		t.Errorf("Delete() route did not register")
+	}
+}
+
 func TestEngine_RunServer(t *testing.T) {
 	e := &Engine{
 		Server: http.Server{Addr: defaultTestingPort},

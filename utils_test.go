@@ -23,53 +23,53 @@ func TestGenerateUrlPattern(t *testing.T) {
 			regexp.MustCompile("^GET /hello-world$"),
 		},
 		{
-			"Params with 1 alphabetic var",
+			"UrlParams with 1 alphabetic var",
 			args{method: http.MethodGet, url: "/hello-world/:id"},
 			regexp.MustCompile("^GET /hello-world/(?P<id>.*)$"),
 		},
 		{
-			"Params with 1 alphanumeric var",
+			"UrlParams with 1 alphanumeric var",
 			args{method: http.MethodGet, url: "/hello-world/:id123"},
 			regexp.MustCompile("^GET /hello-world/(?P<id123>.*)$"),
 		},
 		{
-			"Params with 1 var with all characters",
+			"UrlParams with 1 var with all characters",
 			args{method: http.MethodGet, url: "/hello-world/:id123_AB"},
 			regexp.MustCompile("^GET /hello-world/(?P<id123_AB>.*)$"),
 		},
 		{
-			"Params with 1 alphabetic var and a prefix",
+			"UrlParams with 1 alphabetic var and a prefix",
 			args{method: http.MethodGet, url: "/hello-world/hello-world-:id"},
 			regexp.MustCompile("^GET /hello-world/hello-world-(?P<id>.*)$"),
 		},
 		{
-			"Params with 1 alphanumeric var",
+			"UrlParams with 1 alphanumeric var",
 			args{method: http.MethodGet, url: "/hello-world/hello-world-:id123"},
 			regexp.MustCompile("^GET /hello-world/hello-world-(?P<id123>.*)$"),
 		},
 		{
-			"Params with 1 var with all characters",
+			"UrlParams with 1 var with all characters",
 			args{method: http.MethodGet, url: "/hello-world/hello-world-:id123_AB"},
 			regexp.MustCompile("^GET /hello-world/hello-world-(?P<id123_AB>.*)$"),
 		},
 
 		{
-			"Params with multiple alphabetic vars",
+			"UrlParams with multiple alphabetic vars",
 			args{method: http.MethodGet, url: "/hello-world/:first/:second"},
 			regexp.MustCompile("^GET /hello-world/(?P<first>.*)/(?P<second>.*)$"),
 		},
 		{
-			"Params with multiple alphanumeric vars",
+			"UrlParams with multiple alphanumeric vars",
 			args{method: http.MethodGet, url: "/hello-world/:id1/:id2"},
 			regexp.MustCompile("^GET /hello-world/(?P<id1>.*)/(?P<id2>.*)$"),
 		},
 		{
-			"Params with multiple vars with all characters",
+			"UrlParams with multiple vars with all characters",
 			args{method: http.MethodGet, url: "/hello-world/:id1_A/:id2_B"},
 			regexp.MustCompile("^GET /hello-world/(?P<id1_A>.*)/(?P<id2_B>.*)$"),
 		},
 		{
-			"Params with multiple spread out vars with all characters",
+			"UrlParams with multiple spread out vars with all characters",
 			args{method: http.MethodGet, url: "/hello/:id1_A/world/:id2_B"},
 			regexp.MustCompile("^GET /hello/(?P<id1_A>.*)/world/(?P<id2_B>.*)$"),
 		},

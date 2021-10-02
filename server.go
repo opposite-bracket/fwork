@@ -42,7 +42,7 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Get registers an http request with GET method
+// Get registers http requests with GET method
 func (e *Engine) Get(url string, handler RouteHandler) {
 
 	pattern, _ := GenerateUrlPatternMatcher(http.MethodGet, url)
@@ -50,6 +50,45 @@ func (e *Engine) Get(url string, handler RouteHandler) {
 	e.Routes = append(e.Routes, Route{
 		Url:               url,
 		Method:            http.MethodGet,
+		Handler:           handler,
+		ComputedIdPattern: pattern,
+	})
+}
+
+// Post registers http requests with POST method
+func (e *Engine) Post(url string, handler RouteHandler) {
+
+	pattern, _ := GenerateUrlPatternMatcher(http.MethodPost, url)
+
+	e.Routes = append(e.Routes, Route{
+		Url:               url,
+		Method:            http.MethodPost,
+		Handler:           handler,
+		ComputedIdPattern: pattern,
+	})
+}
+
+// Put registers http requests with POST method
+func (e *Engine) Put(url string, handler RouteHandler) {
+
+	pattern, _ := GenerateUrlPatternMatcher(http.MethodPut, url)
+
+	e.Routes = append(e.Routes, Route{
+		Url:               url,
+		Method:            http.MethodPost,
+		Handler:           handler,
+		ComputedIdPattern: pattern,
+	})
+}
+
+// Delete registers http requests with DELETE method
+func (e *Engine) Delete(url string, handler RouteHandler) {
+
+	pattern, _ := GenerateUrlPatternMatcher(http.MethodDelete, url)
+
+	e.Routes = append(e.Routes, Route{
+		Url:               url,
+		Method:            http.MethodDelete,
 		Handler:           handler,
 		ComputedIdPattern: pattern,
 	})
@@ -78,7 +117,7 @@ func (e *Engine) findRoute(c *ReqContext) (*Route, error) {
 					result[name] = match[i]
 				}
 			}
-			c.Params.Url = result
+			c.UrlParams = result
 			return &route, nil
 		}
 
