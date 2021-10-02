@@ -34,7 +34,7 @@ func TestApiError_Error(t *testing.T) {
 				Message: tt.fields.Message,
 			}
 			if got := e.Error(); got != tt.want {
-				t.Errorf("Error() = %v, want %v", got, tt.want)
+				t.Errorf("ApiError() = %v, want %v", got, tt.want)
 			}
 		})
 	}

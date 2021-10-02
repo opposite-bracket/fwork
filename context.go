@@ -33,9 +33,23 @@ func (c *ReqContext) GetIntQuery(key string, maxVal int, defVal int) int {
 	}
 }
 
-// ExtractStringQuery extracts a string from Query parameter
+// GetInt64Query extracts an int value from Query parameter.
+// Converts to int, Sets a cap and a default value
+func (c *ReqContext) GetInt64Query(key string, maxVal int64, defVal int64) int64 {
+	if strVal := c.Req.URL.Query().Get(key); strVal == "" {
+		return defVal
+	} else if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil && intVal > maxVal {
+		return maxVal
+	} else if err != nil {
+		return defVal
+	} else {
+		return intVal
+	}
+}
+
+// GetStringQuery extracts a string from Query parameter
 // Sets default value if absent
-func (c *ReqContext) ExtractStringQuery(key string, defVal string) string {
+func (c *ReqContext) GetStringQuery(key string, defVal string) string {
 	if strVal := c.Req.URL.Query().Get(key); strVal != "" {
 		return strVal
 	}
@@ -57,9 +71,9 @@ func (c *ReqContext) GetIntUrlParam(key string, maxVal int, defVal int) int {
 	}
 }
 
-// ExtractStringUrlParam extracts a string from Url parameter
+// GetStringUrlParam extracts a string from Url parameter
 // Sets default value if absent
-func (c *ReqContext) ExtractStringUrlParam(key string, defVal string) string {
+func (c *ReqContext) GetStringUrlParam(key string, defVal string) string {
 	if strVal := c.UrlParams[key]; strVal != "" {
 		return strVal
 	}

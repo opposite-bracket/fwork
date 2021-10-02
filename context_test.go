@@ -153,8 +153,8 @@ func TestReqContext_ExtractStringQuery(t *testing.T) {
 				Req: tt.fields.Req,
 				Res: tt.fields.Res,
 			}
-			if got := c.ExtractStringQuery(tt.args.key, tt.args.defVal); got != tt.want {
-				t.Errorf("ExtractStringQuery() = %v, want %v", got, tt.want)
+			if got := c.GetStringQuery(tt.args.key, tt.args.defVal); got != tt.want {
+				t.Errorf("GetStringQuery() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -162,8 +162,8 @@ func TestReqContext_ExtractStringQuery(t *testing.T) {
 
 func TestNewReqContext(t *testing.T) {
 	type args struct {
-		w http.ResponseWriter
-		r *http.Request
+		w         http.ResponseWriter
+		r         *http.Request
 		UrlParams map[string]string
 	}
 	tests := []struct {
@@ -174,8 +174,8 @@ func TestNewReqContext(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				w: sampleRequest.Res,
-				r: sampleRequest.Req,
+				w:         sampleRequest.Res,
+				r:         sampleRequest.Req,
 				UrlParams: sampleRequest.UrlParams,
 			},
 			want: &sampleRequest,
@@ -185,6 +185,86 @@ func TestNewReqContext(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewReqContext(tt.args.w, tt.args.r); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewReqContext() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReqContext_GetInt64Query(t *testing.T) {
+	type fields struct {
+		Req       *http.Request
+		Res       http.ResponseWriter
+		UrlParams map[string]string
+	}
+	type args struct {
+		key    string
+		maxVal int64
+		defVal int64
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   int64
+	}{
+		{
+			name: "happy path",
+			fields: fields{
+				Req: sampleGetReq1,
+			},
+			args: args{
+				key:    "pageSize",
+				maxVal: 1000,
+				defVal: 1000,
+			},
+			want: 10,
+		},
+		{
+			name: "test value getting default value",
+			fields: fields{
+				Req: sampleGetReqNoUrlVars,
+			},
+			args: args{
+				key:    "pageSize",
+				maxVal: 1000,
+				defVal: 500,
+			},
+			want: 500,
+		},
+		{
+			name: "test max value",
+			fields: fields{
+				Req: sampleGetReq2,
+			},
+			args: args{
+				key:    "pageSize",
+				maxVal: 1000,
+				defVal: 500,
+			},
+			want: 1000,
+		},
+		{
+			name: "test invalid value",
+			fields: fields{
+				Req: sampleGetReq3,
+			},
+			args: args{
+				key:    "pageSize",
+				maxVal: 1000,
+				defVal: 500,
+			},
+			want: 500,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &ReqContext{
+				Req:       tt.fields.Req,
+				Res:       tt.fields.Res,
+				UrlParams: tt.fields.UrlParams,
+			}
+			if got := c.GetInt64Query(tt.args.key, tt.args.maxVal, tt.args.defVal); got != tt.want {
+				t.Errorf("GetInt64Query() = %v, want %v", got, tt.want)
 			}
 		})
 	}
