@@ -1,8 +1,10 @@
 package fwork
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 const defaultPort = ":5000"
@@ -34,12 +36,20 @@ type Engine struct {
 // be able to determine which route needs to be
 // used to handle request
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
 	c := NewReqContext(w, r)
 	if route, err := e.findRoute(c); err != nil && err == RouteNotFoundError {
 		c.JsonReply(http.StatusNotFound, Void{})
 	} else {
 		route.Handler(c)
 	}
+	endTime := time.Now()
+	diff := endTime.Sub(startTime)
+	JsonInfoLog(struct {
+		Method   string
+		Url      string
+		Duration string
+	}{r.Method, r.URL.String(), diff.String()})
 }
 
 // Get registers http requests with GET method
@@ -128,6 +138,9 @@ func (e *Engine) findRoute(c *ReqContext) (*Route, error) {
 
 func (e *Engine) RunServer() error {
 	log.Printf("Running on addr %s", defaultPort)
+	JsonInfoLog(struct {
+		Message string
+	}{fmt.Sprintf("Running on addr %s", defaultPort)})
 	return e.ListenAndServe()
 }
 
