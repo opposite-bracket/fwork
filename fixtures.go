@@ -29,8 +29,10 @@ func GenerateFixtureList(pageNum int, pageSize int, cap int, generator FixtureGe
 	indexEndingPoint := IndexEndingPoint(pageNum, pageSize)
 	var items []interface{}
 	for i := indexStartingPoint; i < indexEndingPoint; i++ {
-		if i >= cap {
-			return []interface{}{}
+		if i >= cap && items == nil {
+			return make([]interface{}, 0)
+		} else if i >= cap {
+			return items
 		}
 		items = append(items, generator(i))
 	}
