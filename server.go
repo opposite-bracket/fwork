@@ -49,7 +49,7 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Method   string
 		Url      string
 		Duration string
-	}{r.Method, r.URL.String(), diff.String()})
+	}{r.Method, r.URL.Path, diff.String()})
 }
 
 // Get registers http requests with GET method
