@@ -3,6 +3,7 @@ package fwork
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -16,6 +17,10 @@ const defaultTestingPort = ":50000"
 
 type Response struct {
 	Message string
+}
+
+func HandlerSample (c *ReqContext) error {
+	return nil
 }
 
 var sampleBaseReqContext = ReqContext{
@@ -238,4 +243,38 @@ func TestEngine_ServeHTTP_FindRouteFailsWithOtherError(t *testing.T) {
 	if res.Code != http.StatusNotFound {
 		t.Errorf("ServeHTTP() got %v, want %v", res.Code, http.StatusNotFound)
 	}
+}
+
+func benchmark(format string, url string, b *testing.B) {
+
+	api := NewApi()
+	for i := 1; i <= 200; i++ {
+		api.Get(fmt.Sprintf(format, i), HandlerSample)
+	}
+
+	req, _ := http.NewRequest(http.MethodGet, url, nil)
+	c := NewReqContext(
+		httptest.NewRecorder(),
+		req,
+	)
+
+	for i := 0; i < b.N; i++ {
+		api.findRoute(c)
+	}
+}
+
+func Benchmark_findRoute_with200Routes_noParams(b *testing.B) {
+	benchmark("/hello/world/route-%d", "/hello/world/route-200", b)
+}
+
+func Benchmark_findRoute_with200Routes_with1Param(b *testing.B) {
+	benchmark("/hello/world/route-%d/:id", "/hello/world/route-200/123", b)
+}
+
+func Benchmark_findRoute_with200Routes_with2Param(b *testing.B) {
+	benchmark("/hello/world/route-%d/:id1/:id2", "/hello/world/route-200/123/123", b)
+}
+
+func Benchmark_findRoute_with200Routes_with4Param(b *testing.B) {
+	benchmark("/hello/world/route-%d/:id1/:id2/:id3/:id4", "/hello/world/route-200/123/123/123/123", b)
 }

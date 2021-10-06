@@ -2,7 +2,6 @@ package fwork
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 )
@@ -137,10 +136,9 @@ func (e *Engine) findRoute(c *ReqContext) (*Route, error) {
 }
 
 func (e *Engine) RunServer() error {
-	log.Printf("Running on addr %s", defaultPort)
 	JsonInfoLog(struct {
 		Message string
-	}{fmt.Sprintf("Running on addr %s", defaultPort)})
+	}{fmt.Sprintf("Running on addr %s", e.Server.Addr)})
 	return e.ListenAndServe()
 }
 
